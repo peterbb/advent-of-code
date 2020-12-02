@@ -1,5 +1,6 @@
 
-local open Parser in
+local
+    open Parser
     infix // <*> <|>
 
     val line: (int * int * char * string) Parser.t =
@@ -11,20 +12,14 @@ local open Parser in
         // exact_string ": "
         <*> rest_of_line
         <|> (fn (((min, max), c), password) => (min, max, c, password))
-
+in
     val input = Parser.exec (list line // eof)
 end
 
 fun print_line (min, max, c, password) =
-    println (
-        Int.toString min
-        ^ "-"
-        ^ Int.toString max
-        ^ " "
-        ^ Char.toString c
-        ^ ": "
-        ^ password
-    )
+    let open Printf in
+        printf I`"-"I`" "C`": "S`"\n" % min max c password
+    end
 
 val xor: bool * bool -> bool = op<>
 infix xor
