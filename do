@@ -10,6 +10,10 @@ function compile {
     mlton -default-ann 'allowOptBar true' "$CODE_FILE"
 }
 
+function time_compile {
+    mlton -profile time -default-ann 'allowOptBar true' "$CODE_FILE"
+}
+
 function run {
     compile
     ./$EXEC_FILE < $INPUT_FILE
@@ -36,7 +40,7 @@ if [ $# = 3 ]; then
     echo $1 $2 $3 > .config
 elif [ $# -eq 1 ]; then
     case "$1" in
-    compile|compile|run|benchmark) $1;;
+    time_compile|compile|compile|run|benchmark) $1;;
     *) bad_user;;
     esac
 else

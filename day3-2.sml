@@ -56,4 +56,5 @@ val () =
     |> IntInf.toString
     |> println
 
+val () = report_time ()
 

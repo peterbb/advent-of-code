@@ -83,3 +83,24 @@ end
 structure Pair = struct
     fun swap (x, y) = (y, x)
 end
+
+fun report_time () =
+    let
+        val {nongc, gc} =
+            Timer.totalCPUTimer ()
+            |> Timer.checkCPUTimes
+
+        fun conv time = 
+            Time.toMicroseconds time
+            |> LargeInt.toString
+            |> (fn s => s ^ "ms")
+
+        open Printf
+    in
+        printf `"nongc usr=" S `" sys=" S `"\n"
+               `"gc usr=" S `" sys=" S `" \n" %
+            (conv $ #usr nongc)
+            (conv $ #sys nongc)
+            (conv $ #usr gc)
+            (conv $ #sys gc)
+    end
