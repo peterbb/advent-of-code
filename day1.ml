@@ -1,13 +1,13 @@
 open Core
 
-let neighbors = 
+let sliding_window = 
     let rec loop acc = function
     | x :: (y :: _ as rest) -> loop ((x, y) :: acc) rest
     | _ -> List.rev acc
     in
     loop []
 
-let neighbors3 = 
+let sliding_window_3 = 
     let rec loop acc = function
     | x :: (y :: z :: _ as rest) -> loop ((x, y, z) :: acc) rest
     | _ -> List.rev acc
@@ -19,17 +19,16 @@ let lines = In_channel.input_lines In_channel.stdin
 
 let () = 
     lines
-    |> neighbors
+    |> sliding_window
     |> List.count ~f:(fun (x, y) -> x < y)
     |> printf "part 1: %d\n"
 
 let () =
     lines
-    |> neighbors3
+    |> sliding_window_3
     |> List.map ~f:(fun (x, y, z) -> x + y + z)
-    |> neighbors 
+    |> sliding_window
     |> List.count ~f:(fun (x, y) -> x < y)
     |> printf "part 2: %d\n"
-
 
 
