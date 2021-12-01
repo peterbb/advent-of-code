@@ -1,0 +1,35 @@
+open Core
+
+let neighbors = 
+    let rec loop acc = function
+    | x :: (y :: _ as rest) -> loop ((x, y) :: acc) rest
+    | _ -> List.rev acc
+    in
+    loop []
+
+let neighbors3 = 
+    let rec loop acc = function
+    | x :: (y :: z :: _ as rest) -> loop ((x, y, z) :: acc) rest
+    | _ -> List.rev acc
+    in
+    loop []
+
+let lines = In_channel.input_lines In_channel.stdin
+    |> List.map ~f:int_of_string
+
+let () = 
+    lines
+    |> neighbors
+    |> List.count ~f:(fun (x, y) -> x < y)
+    |> printf "part 1: %d\n"
+
+let () =
+    lines
+    |> neighbors3
+    |> List.map ~f:(fun (x, y, z) -> x + y + z)
+    |> neighbors 
+    |> List.count ~f:(fun (x, y) -> x < y)
+    |> printf "part 2: %d\n"
+
+
+
