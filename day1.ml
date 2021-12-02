@@ -17,10 +17,12 @@ let sliding_window_3 =
 let lines = In_channel.input_lines In_channel.stdin
     |> List.map ~f:int_of_string
 
+let count_increase = List.count ~f:(fun (x, y) -> x < y)
+
 let () = 
     lines
     |> sliding_window
-    |> List.count ~f:(fun (x, y) -> x < y)
+    |> count_increase
     |> printf "part 1: %d\n"
 
 let () =
@@ -28,7 +30,7 @@ let () =
     |> sliding_window_3
     |> List.map ~f:(fun (x, y, z) -> x + y + z)
     |> sliding_window
-    |> List.count ~f:(fun (x, y) -> x < y)
+    |> count_increase
     |> printf "part 2: %d\n"
 
 
