@@ -1,4 +1,5 @@
 open Core
+open Advent_of_code
 
 let sliding_window = 
     let rec loop acc = function
@@ -14,7 +15,8 @@ let sliding_window_3 =
     in
     loop []
 
-let lines = In_channel.input_lines In_channel.stdin
+let lines =
+    read_lines ()
     |> List.map ~f:int_of_string
 
 let count_increase = List.count ~f:(fun (x, y) -> x < y)
