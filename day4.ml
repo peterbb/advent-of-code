@@ -36,19 +36,18 @@ let mark_on_board draw board =
         | _, num when num = draw -> true, num
         | _ -> spot
     in
-    board
-    |> List.map ~f:(List.map ~f:mark_spot)
+    List.map ~f:(List.map ~f:mark_spot) board
 
 let board_wins board =
-    let winning_row = List.for_all ~f:(fun (m, _) -> m) in
+    let winning_row = List.for_all ~f:fst in
     let has_row_win = List.exists ~f:winning_row in
-    has_row_win board || has_row_win (List.transpose_exn board)
+    has_row_win board || has_row_win @@ List.transpose_exn board
 
 let declare_winner ~last_draw board =
     let sum_not_selected =
         List.concat board
-        |> List.filter ~f:(fun (m, _) -> not m)
-        |> List.map ~f:(fun (_, n) -> n)
+        |> List.filter ~f:(Fn.compose not fst)
+        |> List.map ~f:snd
         |> List.sum (module Int) ~f:ident
     in
     printf "sum: %d\n" sum_not_selected;
