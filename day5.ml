@@ -1,5 +1,14 @@
 open Core
 
+module List = struct
+    include List
+
+    let group_equals ~compare xs =
+        let not_equal a b = compare a b <> 0 in
+        List.sort ~compare xs
+        |> List.group ~break:not_equal
+end
+
 let lines = 
     Lexing.from_channel In_channel.stdin
     |> Day5_parser.lines Day5_lexer.read 
@@ -36,14 +45,10 @@ let compare a b =
     let cmp2 (_, y0) (_, y1) = Int.compare y0 y1 in
     Comparable.lexicographic [cmp1; cmp2] a b
 
-let not_equal a b =
-    compare a b <> 0
-
 let solve line_expander =
     lines
     |> List.concat_map ~f:line_expander
-    |> List.sort ~compare
-    |> List.group ~break:not_equal
+    |> List.group_equals ~compare
     |> List.count ~f:(fun l -> List.length l >= 2)
     |> printf "%d\n"
 
