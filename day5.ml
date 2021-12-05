@@ -1,4 +1,5 @@
 open Core
+open Advent_of_code
 
 module List = struct
     include List
@@ -9,9 +10,7 @@ module List = struct
         |> List.group ~break:not_equal
 end
 
-let lines = 
-    Lexing.from_channel In_channel.stdin
-    |> Day5_parser.lines Day5_lexer.read 
+let lines = parse_input Day5_parser.lines Day5_lexer.read 
 
 let step n ~towards =
     if n < towards then
@@ -23,14 +22,15 @@ let step n ~towards =
 
 let expand_line (x1, y1, x2, y2) =
     let rec loop acc x1 y1 =
+        let acc = (x1, y1) :: acc in
         if x1 = x2 && y1 = y2 then
-            (x1, y1) :: acc
+            acc
         else if x1 = x2 then
-            loop ((x1, y1) :: acc) x1 (step y1 ~towards:y2)
+            loop acc x1 (step y1 ~towards:y2)
         else if y1 = y2 then
-            loop ((x1, y1) :: acc) (step x1 ~towards:x2) y1
+            loop acc (step x1 ~towards:x2) y1
         else 
-            loop ((x1, y1) :: acc) (step x1 ~towards:x2) (step y1 ~towards:y2)
+            loop acc (step x1 ~towards:x2) (step y1 ~towards:y2)
     in
     loop [] x1 y1
 

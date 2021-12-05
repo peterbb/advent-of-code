@@ -1,9 +1,9 @@
 open Core
 open Day2_command
+open Advent_of_code
 
 let commands = 
-    Lexing.from_channel In_channel.stdin
-    |> Day2_parser.commands Day2_lexer.read 
+    parse_input Day2_parser.commands Day2_lexer.read 
 
 module type MEANING = sig
     type t
