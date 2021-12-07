@@ -27,11 +27,8 @@ let rec compute_solution ~gen ~a0 ~a1 ~a2 ~a3 ~a4 ~a5 ~a6 ~a7 ~a8 =
 let compute_init_school () = 
     raw_first_line
     |> String.split ~on:','
-    |> List.map ~f:int_of_string
-    |> List.sort ~compare:Int.compare
-    |> List.group ~break:Int.(<>)
-    |> List.map ~f:(fun l -> List.hd_exn l, List.length l)
-    |> IntMap.of_alist_exn
+    |> List.map ~f:(fun n -> int_of_string n, 1)
+    |> IntMap.of_alist_reduce ~f:(+)
 
 let solve_only ~gen ~init_school =
     let g n = 
