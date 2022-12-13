@@ -58,8 +58,7 @@ interface Packet {
             get() = this
 
         override fun toString() =
-            list.map { it.toString() }
-                .joinToString(",", "[", "]")
+            list.joinToString(",", "[", "]") { it.toString() }
     }
 
     companion object {
