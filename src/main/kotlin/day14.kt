@@ -1,5 +1,3 @@
-import java.lang.Thread.yield
-
 fun day14input(lines: Lines): MutableSet<Coord> =
     lines
         .split(" -> ")
@@ -14,17 +12,18 @@ fun day14input(lines: Lines): MutableSet<Coord> =
 
 fun day14part1(lines: Lines): Int {
     val state = day14input(lines)
-    val void = state.maxOf { it.second }
-    return generateSequence(state) { addSand(Pair(500, 0), it, void, null) }
-        .count() - 1 /* initial element not caused by sand */
+    val lowestStone = state.maxOf { it.second }
+    return generateSequence(state) { state -> addSand(state, lowestStone, floor = false) }
+        .drop(1) /* initial element is start state, not caused by sand. */
+        .count()
 }
 
 fun day14part2(lines: Lines): Int {
     val state = day14input(lines)
-    val void = state.maxOf { it.second }
-    val floor = state.map { it.second }.max() + 2
-    return generateSequence(state) { addSand(Pair(500, 0), it, void, floor) }
-        .count() - 1 /* initial element not caused by sand */
+    val lowestStone = state.maxOf { it.second }
+    return generateSequence(state) { state -> addSand(state, lowestStone, floor = true) }
+        .drop(1) /* initial element is start state, not caused by sand. */
+        .count()
 }
 
 val Pair<Coord, Coord>.expandLine: Sequence<Coord> get() = sequence {
@@ -43,41 +42,18 @@ fun Coord.stepTowards(other: Coord): Coord =
 
 
 fun addSand(
-    sand: Coord,
     state: MutableSet<Coord>,
-    void: Int,
-    floor: Int?,
-): MutableSet<Coord>? {
-    var sand: Coord = sand
-
-    while (true) {
-        when {
-            sand in state -> {
-                return null
-            }
-            floor != null && sand.second == floor - 1 -> {
-                return state.apply { add(sand) }
-            }
-            sand.second > void -> {
-                return null
-            }
-            sand.down !in state -> {
-                sand = sand.down
-                continue
-            }
-            sand.down.left !in state -> {
-                sand = sand.down.left
-                continue
-            }
-            sand.down.right !in state -> {
-                sand = sand.down.right
-                continue
-            }
-            else -> {
-                return state.apply { add(sand) }
-            }
-        }
-    }
+    lowestStone: Int,
+    floor: Boolean,
+    sand: Coord = Pair(500, 0),
+): MutableSet<Coord>? = when {
+    sand in state -> null
+    floor && sand.second == lowestStone + 1 -> state.apply { add(sand) }
+    !floor && sand.second == lowestStone -> null
+    sand.down !in state -> addSand(state, lowestStone, floor, sand.down)
+    sand.down.left !in state -> addSand(state, lowestStone, floor, sand.down.left)
+    sand.down.right !in state -> addSand(state, lowestStone, floor, sand.down.right)
+    else -> state.apply { add(sand) }
 }
 
 val Coord.down: Coord get() = first to (second + 1)
