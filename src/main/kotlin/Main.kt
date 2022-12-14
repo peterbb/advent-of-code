@@ -1,3 +1,6 @@
+import kotlin.time.ExperimentalTime
+import kotlin.time.measureTimedValue
+
 fun main() {
     run(day = 1, ::day1part1 to listOf(24000, 70509), ::day1part2 to listOf(45000, 208567))
     run(day = 2, ::day2part1 to listOf(15, 8392), ::day2part2 to listOf(12, 10116))
@@ -30,18 +33,19 @@ fun main() {
     run(day = 11, ::day11part1 to listOf(10605, 54036), ::day11part2 to listOf(2713310158, 13237873355))
     run(day = 12, ::day12part1 to listOf(31, 517), ::day12part2 to listOf(29, 512))
     run(day = 13, ::day13part1 to listOf(13, 6623), ::day13part2 to listOf(140, 23049))
-    run(day = 13, ::day14part1 to listOf(0))
+    run(day = 14, ::day14part1 to listOf(24, 888), ::day14part2 to listOf(93, 26461))
 }
-
-
 
 /**** TASK RUNNER *****/
 typealias Lines = Sequence<String>
 
+@OptIn(ExperimentalTime::class)
 fun <Result> run(day: Int, vararg parts: Pair<(Lines) -> Result, List<Result>>) {
     parts.forEachIndexed { part, (implementation, solutions) ->
         solutions.forEachIndexed { dataSet, solution ->
-            assert("Day $day part $part", solution, implementation(loadLines("${day.nn}-${dataSet}-data.txt")))
+            val input = loadLines("${day.nn}-${dataSet}-data.txt")
+            val x = measureTimedValue { implementation(input) }
+            assert("Day $day part $part in ${x.duration}", solution, x.value)
         }
     }
 }

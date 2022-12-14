@@ -1,7 +1,10 @@
 import java.lang.Integer.max
 import java.math.BigInteger
 
+
 typealias Matrix<T> = List<List<T>>
+
+typealias Coord = Pair<Int, Int>
 
 fun Sequence<String>.split(on: String) = map { it.split(on) }
 
@@ -17,7 +20,7 @@ fun <A, B> Sequence<Pair<A, A>>.mapPair(f: (A) -> B) =
     map { f(it.first) to f(it.second) }
 
 fun String.splitPair(on: String): Pair<String, String> =
-    split(on).let { it[0] to it[1] }
+    this.split(on).asPair
 
 val Pair<Int, Int>.asClosedRange: IntRange
     get() = IntRange(first, second)
@@ -64,13 +67,29 @@ fun <S, T, U> Iterable<Pair<S, T>>.map2(f: (S, T) -> U): Iterable<U> =
 fun <S, T, U> Sequence<Pair<S, T>>.mapRight(f: (T) -> U): Sequence<Pair<S, U>> =
     map { it.first to f(it.second) }
 
+fun <T> createMutableList(size: Int, elem: (Int) -> T): MutableList<T> =
+    createSequence(size, elem).toMutableList()
+
+typealias MutableMatrix<T> = MutableList<MutableList<T>>
+
+val <T> Matrix<T>.asMutableMatrix: MutableMatrix<T>
+    get() = map { it.toMutableList() }.toMutableList()
+fun <T> createMutableMatrix(width: Int, height: Int, elem: (Coord) -> T): MutableMatrix<T> =
+    createMutableList(width) { x ->
+        createMutableList(height) { y ->
+            elem(x to y)
+        }
+    }
+
 fun <T> createList(size: Int, elem: (Int) -> T): List<T> =
+    createSequence(size, elem).toList()
+
+fun <T> createSequence(size: Int, elem: (Int) -> T): Sequence<T> =
     sequence {
         repeat(size) { i ->
             yield(elem(i))
         }
     }
-        .toList()
 
 val <T> Matrix<T>.rotateRight: Matrix<T>
     get() {
@@ -108,15 +127,15 @@ val Sequence<Int>.product: Int
 fun <T> Sequence<T>.productOf(project: (T) -> Int): Int =
     map(project).product
 
-fun Sequence<String>.findCoord(char: Char): Pair<Int, Int> =
+fun Sequence<String>.findCoord(char: Char): Coord =
     withIndex().map { it.index to it.value.indexOf(char) }
         .find { it.second != -1 }!!
 
 
-operator fun <A> Matrix<A>.get(coord: Pair<Int, Int>): A =
+operator fun <A> Matrix<A>.get(coord: Coord): A =
     this[coord.first][coord.second]
 
-val <T> Matrix<T>.coordinates: Sequence<Pair<Int, Int>>
+val <T> Matrix<T>.coordinates: Sequence<Coord>
     get() =
         asSequence()
             .flatMapIndexed { i, row ->
