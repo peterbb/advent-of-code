@@ -32,6 +32,17 @@ fun Sequence<Coord>.restingPlace(cutoff: Int): Coord? {
     return prev
 }
 
+//// more than doubles running-time
+//fun Sequence<Coord>.restingPlace(cutoff: Int): Coord? {
+//    for (w in windowed(2, 1, true)) {
+//        when {
+//            w.size == 1 -> return w[0]
+//            w[0].second > cutoff -> return null
+//        }
+//    }
+//    return null
+//}
+
 
 fun day14part2(lines: Lines): Int {
     val state = day14input(lines)
