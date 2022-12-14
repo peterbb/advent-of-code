@@ -30,6 +30,7 @@ fun main() {
     run(day = 11, ::day11part1 to listOf(10605, 54036), ::day11part2 to listOf(2713310158, 13237873355))
     run(day = 12, ::day12part1 to listOf(31, 517), ::day12part2 to listOf(29, 512))
     run(day = 13, ::day13part1 to listOf(13, 6623), ::day13part2 to listOf(140, 23049))
+    run(day = 13, ::day14part1 to listOf(0))
 }
 
 
