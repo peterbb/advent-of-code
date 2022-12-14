@@ -81,6 +81,11 @@ fun <T> createMutableMatrix(width: Int, height: Int, elem: (Coord) -> T): Mutabl
         }
     }
 
+fun <T> generateSequenceWithoutSeed(seed: T, next: (T) -> T?): Sequence<T>
+        = generateSequence(seed, next)
+    .drop(1)
+
+
 fun <T> createList(size: Int, elem: (Int) -> T): List<T> =
     createSequence(size, elem).toList()
 

@@ -13,17 +13,43 @@ fun day14input(lines: Lines): MutableSet<Coord> =
 fun day14part1(lines: Lines): Int {
     val state = day14input(lines)
     val lowestStone = state.maxOf { it.second }
-    return generateSequence(state) { state -> addSand(state, lowestStone, floor = false) }
-        .drop(1) /* initial element is start state, not caused by sand. */
+    return generateSequenceWithoutSeed(state) { state ->
+        nextCaveState(state, lowestStone) { it in state }
+    }
         .count()
 }
 
+fun Sequence<Coord>.restingPlace(cutoff: Int): Coord? {
+    var prev: Coord? = null
+
+    for (coord in this) {
+        prev = coord
+
+        if (coord.second > cutoff) {
+            return null
+        }
+    }
+    return prev
+}
+
+
 fun day14part2(lines: Lines): Int {
     val state = day14input(lines)
-    val lowestStone = state.maxOf { it.second }
-    return generateSequence(state) { state -> addSand(state, lowestStone, floor = true) }
-        .drop(1) /* initial element is start state, not caused by sand. */
+    val floor = state.maxOf { it.second } + 2
+    return generateSequenceWithoutSeed(state) { state ->
+        nextCaveState(state, floor) { it in state || it.second == floor }
+    }
         .count()
+}
+
+fun nextCaveState(state: MutableSet<Coord>, fallCutoff: Int, occupied: (Coord) -> Boolean): MutableSet<Coord>? {
+    val coord = sandPath(Coord(500, 0), occupied)
+        .restingPlace(fallCutoff)
+    return if (coord == null) {
+        null
+    } else {
+        state.adding(coord)
+    }
 }
 
 val Pair<Coord, Coord>.expandLine: Sequence<Coord> get() = sequence {
@@ -41,20 +67,20 @@ fun Coord.stepTowards(other: Coord): Coord =
     (first + (other.first - this.first).coerceIn(-1, 1)) to (second + (other.second - this.second).coerceIn(-1, 1))
 
 
-fun addSand(
-    state: MutableSet<Coord>,
-    lowestStone: Int,
-    floor: Boolean,
-    sand: Coord = Pair(500, 0),
-): MutableSet<Coord>? = when {
-    sand in state -> null
-    floor && sand.second == lowestStone + 1 -> state.apply { add(sand) }
-    !floor && sand.second == lowestStone -> null
-    sand.down !in state -> addSand(state, lowestStone, floor, sand.down)
-    sand.down.left !in state -> addSand(state, lowestStone, floor, sand.down.left)
-    sand.down.right !in state -> addSand(state, lowestStone, floor, sand.down.right)
-    else -> state.apply { add(sand) }
-}
+fun <T> T.nullIf(predicate: (T) -> Boolean): T? =
+    if (predicate(this)) null else this
+
+fun sandPath(startPosition: Coord, occupied: (Coord) -> Boolean): Sequence<Coord> =
+    generateSequence(startPosition.nullIf { occupied(it) }) {
+        when {
+            !occupied(it.down) -> it.down
+            !occupied(it.down.left) -> it.down.left
+            !occupied(it.down.right) -> it.down.right
+            else -> null
+        }
+    }
+
+fun <T> MutableSet<T>.adding(t: T) = this.apply { add(t) }
 
 val Coord.down: Coord get() = first to (second + 1)
 val Coord.left: Coord get() = (first - 1) to second
