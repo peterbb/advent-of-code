@@ -1,5 +1,3 @@
-import java.util.concurrent.Future
-
 typealias Parser<T> = (String) -> Pair<T, String>?
 
 object Parsec {
@@ -14,7 +12,10 @@ object Parsec {
     }
 
     fun r(r: String): Parser<String> = {
-        Regex("""^($r)(.*)$""").find(it)?.destructured?.let { (x, y) -> x to y }
+        Regex(
+            """\A($r)(.*)\z""",
+            setOf(RegexOption.MULTILINE, RegexOption.DOT_MATCHES_ALL)
+        ).find(it)?.destructured?.let { (x, y) -> x to y }
     }
 
     fun <S, T> Parser<S>.map(f: (S) -> T): Parser<T> =
@@ -58,6 +59,19 @@ object Parsec {
         }
 
 
+    fun <T: Any> Parser<T>.list(): Parser<List<T>> {
+        val self = Box<Parser<List<T>>>(null)
+        self.box = maybe(this) bind { head ->
+            when (head) {
+                null -> pure(listOf())
+                else -> self.box!! bind {
+                    pure (listOf(head) + it)
+                }
+            }
+        }
+        return self.box!!
+    }
+
     fun <T: Any, S: Any> Parser<T>.list(sep: Parser<S>): Parser<List<T>> {
         val self = Box<Parser<List<T>>>(null)
         self.box = maybe(this) bind { head ->
@@ -76,9 +90,10 @@ object Parsec {
     }
 }
 
+fun <T> String.parse(p: Lazy<Parser<T>>): T = parse(p.value)
+
 fun <T> String.parse(p: Parser<T>): T {
-    val (x, y) = p(this) ?:
-    throw IllegalArgumentException("unable to parse '$this'")
+    val (x, y) = p(this) ?: throw IllegalArgumentException("unable to parse '$this'")
     require(y == "") { "residue input after parse: '$y'" }
     return x
 }

@@ -36,7 +36,7 @@ fun day12(lines: Lines): Matrix<Vertex> {
         val current = unvisited.removeFirst()
         for (n in current.inEdge) {
             if (n in unvisited) {
-                val alt = if (current.distance == Long.MAX_VALUE) Long.MAX_VALUE else current.distance + 1
+                val alt = n.distance.saturatedSuccessor
                 if (alt < n.distance) {
                     n.distance = alt
                 }
@@ -46,6 +46,11 @@ fun day12(lines: Lines): Matrix<Vertex> {
 
     return graph
 }
+
+val Long.saturatedSuccessor: Long
+    get() = if (this == Long.MAX_VALUE) this else this + 1
+
+
 class Vertex(
     val height: Int,
 ) {
