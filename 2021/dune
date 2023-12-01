@@ -1,0 +1,9 @@
+(executables
+ (names day1 day2 day3 day4 day5 day6 day7)
+ (libraries core core_bench))
+
+(menhir
+    (modules day2_parser day5_parser))
+
+(ocamllex day2_lexer)
+(ocamllex day5_lexer)
