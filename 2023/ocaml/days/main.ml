@@ -16,6 +16,7 @@ type testcase =
 let run day testcases =
   let module Day = (val day : Day) in
   let run_testcase i {part; input; expect} =
+    Out_channel.flush Out_channel.stdout;
     let f = match part with
     | `p1 -> Day.part1
     | `p2 -> Day.part2
@@ -69,6 +70,13 @@ let () = begin
   ; { part = `p1; input = file "inputs/04.txt"; expect = `secret }
   ; { part = `p2; input = Day04.example_input_1; expect = `is "30" }
   ; { part = `p2; input = file "inputs/04.txt"; expect = `secret }
+  ];
+
+  run (module Day05)
+  [ { part = `p1; input = Day05.example_input_1; expect = `is "35" }
+  ; { part = `p1; input = file "inputs/05.txt"; expect = `secret }
+  ; { part = `p2; input = Day05.example_input_1; expect = `is "46" }
+  ; { part = `p2; input = file "inputs/05.txt"; expect = `secret }
   ];
 
   ()
