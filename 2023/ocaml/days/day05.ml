@@ -113,9 +113,10 @@ let parse input: input =
 let is_nonempty_range { from; to_ } = from < to_
 
 let range_intersect x y: range list = 
-  [{ from = Int.max x.from y.from 
-  ; to_ = Int.min x.to_ y.to_
-  }]
+  [ { from = Int.max x.from y.from 
+    ; to_ = Int.min x.to_ y.to_
+    }
+  ]
   |> List.filter ~f:is_nonempty_range
 
 let range_set_minus x y: range list =

@@ -1,5 +1,6 @@
 open Core
 open Stdio
+open Core_bench
 
 module type Day = sig
   val day: int
@@ -21,6 +22,7 @@ let run day testcases =
     | `p1 -> Day.part1
     | `p2 -> Day.part2
     in
+    let name = sprintf "day %d part %d test %d\n" Day.day (match part with `p1 -> 1 | `p2 -> 2) i in
     let answer = f input in
     let expect = match expect with
       | `is x -> x
@@ -29,29 +31,28 @@ let run day testcases =
         |> Option.value ~default:("?", "?")
         |> match part with `p1 -> fst | `p2 -> snd
     in
-    if String.(answer = expect) then
-      printf "🎄 day %d part %d test %d\n" Day.day (match part with `p1 -> 1 | `p2 -> 2) i
+    begin if String.(answer = expect) then
+      printf "🎄 %s\n" name
     else 
-      printf "🎅 day %d part %d test %d failed. expected '%s', git '%s'.\n"
-        Day.day 
-        (match part with `p1 -> 1 | `p2 -> 2)
-        i
-        expect
-        answer
+      printf "🎅 %s failed. expected '%s', git '%s'.\n" name expect answer
+    end;
+    let bench = Bench.Test.create ~name (fun () -> ignore (f input)) in
+    Command_unix.run (Bench.make_command [bench])
+
   in
   testcases |> List.iteri ~f:run_testcase
 
 let file filename = In_channel.read_all filename
 
 let () = begin
-  run (module Day01) 
+  (* run (module Day01) 
   [ { part = `p1; input = Day01.example_input_1; expect = `is "142" }
   ; { part = `p1; input = file "inputs/01.txt"; expect = `secret }
   ; { part = `p2; input = Day01.example_input_2; expect = `is "281" }
   ; { part = `p2; input = file "inputs/01.txt"; expect = `secret }
-  ];
+  ]; *)
 
-  run (module Day02)
+  (* run (module Day02)
   [ { part = `p1; input = Day02.example_input_1; expect = `is "8" }
   ; { part = `p1; input = file "inputs/02.txt"; expect = `secret }
   ; { part = `p2; input = Day02.example_input_1; expect = `is "2286" }
@@ -77,6 +78,14 @@ let () = begin
   ; { part = `p1; input = file "inputs/05.txt"; expect = `secret }
   ; { part = `p2; input = Day05.example_input_1; expect = `is "46" }
   ; { part = `p2; input = file "inputs/05.txt"; expect = `secret }
+  ]; *)
+
+  run (module Day06)
+  [ 
+    (* { part = `p1; input = Day06.example_input_1; expect = `is "288" } *)
+  (* ; { part = `p1; input = file "inputs/06.txt"; expect = `secret } *)
+  (* ; { part = `p2; input = Day06.example_input_1; expect = `is "71503" } *)
+  { part = `p2; input = file "inputs/06.txt"; expect = `secret }
   ];
 
   ()
