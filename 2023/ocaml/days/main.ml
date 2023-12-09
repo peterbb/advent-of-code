@@ -93,8 +93,8 @@ let () = begin
   run (module Day07)
   [ { part = `p1; input = Day07.example_input_1; expect = `is "6440" }
   ; { part = `p1; input = file "inputs/07.txt"; expect = `secret }
-  (* ; { part = `p2; input = Day07.example_input_1; expect = `is "71503" } *)
-  (* { part = `p2; input = file "inputs/07.txt"; expect = `secret } *)
+  ; { part = `p2; input = Day07.example_input_1; expect = `is "5905" }
+  ; { part = `p2; input = file "inputs/07.txt"; expect = `secret }
   ];
 
   ()
