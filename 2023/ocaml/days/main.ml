@@ -14,7 +14,7 @@ type testcase =
   ; expect: [`is of string | `secret ]
   }
 
-let run day testcases =
+let run ?benchmark:(benchmark=false) day testcases =
   let module Day = (val day : Day) in
   let run_testcase i {part; input; expect} =
     Out_channel.flush Out_channel.stdout;
@@ -22,7 +22,7 @@ let run day testcases =
     | `p1 -> Day.part1
     | `p2 -> Day.part2
     in
-    let name = sprintf "day %d part %d test %d\n" Day.day (match part with `p1 -> 1 | `p2 -> 2) i in
+    let name = sprintf "day %d part %d test %d" Day.day (match part with `p1 -> 1 | `p2 -> 2) i in
     let answer = f input in
     let expect = match expect with
       | `is x -> x
@@ -36,23 +36,24 @@ let run day testcases =
     else 
       printf "🎅 %s failed. expected '%s', git '%s'.\n" name expect answer
     end;
-    let bench = Bench.Test.create ~name (fun () -> ignore (f input)) in
-    Command_unix.run (Bench.make_command [bench])
-
+    if benchmark then begin
+      let bench = Bench.Test.create ~name (fun () -> ignore (f input)) in
+      Command_unix.run (Bench.make_command [bench])
+    end
   in
   testcases |> List.iteri ~f:run_testcase
 
 let file filename = In_channel.read_all filename
 
 let () = begin
-  (* run (module Day01) 
+  run (module Day01) 
   [ { part = `p1; input = Day01.example_input_1; expect = `is "142" }
   ; { part = `p1; input = file "inputs/01.txt"; expect = `secret }
   ; { part = `p2; input = Day01.example_input_2; expect = `is "281" }
   ; { part = `p2; input = file "inputs/01.txt"; expect = `secret }
-  ]; *)
+  ];
 
-  (* run (module Day02)
+  run (module Day02)
   [ { part = `p1; input = Day02.example_input_1; expect = `is "8" }
   ; { part = `p1; input = file "inputs/02.txt"; expect = `secret }
   ; { part = `p2; input = Day02.example_input_1; expect = `is "2286" }
@@ -73,19 +74,27 @@ let () = begin
   ; { part = `p2; input = file "inputs/04.txt"; expect = `secret }
   ];
 
-  run (module Day05)
-  [ { part = `p1; input = Day05.example_input_1; expect = `is "35" }
+  (*
+  run (module day05)
+  [ { part = `p1; input = day05.example_input_1; expect = `is "35" }
   ; { part = `p1; input = file "inputs/05.txt"; expect = `secret }
-  ; { part = `p2; input = Day05.example_input_1; expect = `is "46" }
+  ; { part = `p2; input = day05.example_input_1; expect = `is "46" }
   ; { part = `p2; input = file "inputs/05.txt"; expect = `secret }
-  ]; *)
+  ];
+     *)
 
   run (module Day06)
-  [ 
-    (* { part = `p1; input = Day06.example_input_1; expect = `is "288" } *)
-  (* ; { part = `p1; input = file "inputs/06.txt"; expect = `secret } *)
-  (* ; { part = `p2; input = Day06.example_input_1; expect = `is "71503" } *)
-  { part = `p2; input = file "inputs/06.txt"; expect = `secret }
+  [ { part = `p1; input = Day06.example_input_1; expect = `is "288" }
+  ; { part = `p1; input = file "inputs/06.txt"; expect = `secret }
+  ; { part = `p2; input = Day06.example_input_1; expect = `is "71503" }
+  (* { part = `p2; input = file "inputs/06.txt"; expect = `secret } *)
+  ];
+
+  run (module Day07)
+  [ { part = `p1; input = Day07.example_input_1; expect = `is "6440" }
+  ; { part = `p1; input = file "inputs/07.txt"; expect = `secret }
+  (* ; { part = `p2; input = Day07.example_input_1; expect = `is "71503" } *)
+  (* { part = `p2; input = file "inputs/07.txt"; expect = `secret } *)
   ];
 
   ()
