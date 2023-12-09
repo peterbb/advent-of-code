@@ -55,8 +55,11 @@ let possible_travel_distances Race.{time_allowed; best_distance} =
 
 
 let solve races = 
-  let possible_times = races |> List.map ~f:(fun Race.{time_allowed; best_distance} -> {time_allowed; best_distance; possible_distances = possible_travel_distances time_allowed}) in
-  let acceptable_times = possible_times |> List.map ~f:(fun {best_distance; possible_distances; _} -> List.filter ~f:(fun possible_distance -> possible_distance > best_distance) possible_distances) in
+  let possible_times = races |> List.map ~f:possible_travel_distances in
+  let acceptable_times =
+    possible_times
+    |> List.map ~f:(fun {best_distance; possible_distances; _} -> List.filter ~f:(fun possible_distance -> possible_distance > best_distance) possible_distances)
+  in
   List.sum (module IntProduct) ~f:List.length acceptable_times
   |> sprintf "%d"
 
