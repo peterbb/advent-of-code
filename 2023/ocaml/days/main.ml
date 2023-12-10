@@ -22,7 +22,7 @@ let run ?benchmark:(benchmark=false) day testcases =
     | `p1 -> Day.part1
     | `p2 -> Day.part2
     in
-    let name = sprintf "day %d part %d test %d" Day.day (match part with `p1 -> 1 | `p2 -> 2) i in
+    let name = sprintf "day %d part %d test %d" Day.day (match part with `p1 -> 1 | `p2 -> 2) (i + 1) in
     let answer = f input in
     let expect = match expect with
       | `is x -> x
@@ -34,7 +34,7 @@ let run ?benchmark:(benchmark=false) day testcases =
     begin if String.(answer = expect) then
       printf "🎄 %s\n" name
     else 
-      printf "🎅 %s failed. expected '%s', git '%s'.\n" name expect answer
+      printf "🎅 %s failed. expected '%s', got '%s'.\n" name expect answer
     end;
     if benchmark then begin
       let bench = Bench.Test.create ~name (fun () -> ignore (f input)) in
@@ -95,6 +95,14 @@ let () = begin
   ; { part = `p1; input = file "inputs/07.txt"; expect = `secret }
   ; { part = `p2; input = Day07.example_input_1; expect = `is "5905" }
   ; { part = `p2; input = file "inputs/07.txt"; expect = `secret }
+  ];
+
+  run (module Day08)
+  [ { part = `p1; input = Day08.example_input_1; expect = `is "2" }
+  ; { part = `p1; input = Day08.example_input_2; expect = `is "6" }
+  ; { part = `p1; input = file "inputs/08.txt"; expect = `secret }
+  ; { part = `p2; input = Day08.example_input_3; expect = `is "6" }
+  ; { part = `p2; input = file "inputs/08.txt"; expect = `secret }
   ];
 
   ()
