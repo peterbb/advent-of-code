@@ -112,5 +112,12 @@ let () = begin
   ; { part = `p2; input = file "inputs/09.txt"; expect = `secret }
   ];
 
+  run (module Day10)
+  [ { part = `p1; input = Day10.example_input_1; expect = `is "4" }
+  ; { part = `p1; input = Day10.example_input_2; expect = `is "8" }
+  (* ; { part = `p1; input = file "inputs/10.txt"; expect = `secret } *)
+  (* ; { part = `p2; input = Day10.example_input_1; expect = `is "2" } *)
+  (* ; { part = `p2; input = file "inputs/10.txt"; expect = `secret } *)
+  ];
   ()
 end
