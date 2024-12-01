@@ -1,0 +1,8 @@
+(executable
+ (public_name aoc)
+ (name main)
+ (preprocess (pps sedlex.ppx ppx_jane ppx_inline_test))
+ (libraries sedlex menhirLib core core_bench))
+
+(menhir
+ (modules day01_parser))
